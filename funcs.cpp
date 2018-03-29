@@ -1,25 +1,28 @@
 #include <iostream>
 #include <string>
 
-std::string removeLeadingSpaces(std::string line){ 
+using namespace std;
+//didn't use using namespace before
+
+string removeLeadingSpaces(string line){ 
 	for (int i = 0; i < line.size(); i++){
 		if (!isspace(line[i])){
-			std::string result = line.substr(i);
+			string result = line.substr(i);
 			return result;
 		}
 	}
 }
 
-std::string unindent(){
-	std::string result;
-	std::string line;
-	while (getline(std::cin, line)){
+string unindent(){
+	string result;
+	string line;
+	while (getline(cin, line)){
 		result += removeLeadingSpaces(line) + "\n";
 	}
 	return result;
 }
 
-int countChar(std::string line, char c){
+int countChar(string line, char c){
 	int count = 0;
 	for (int i = 0; i < line.size(); i++){
 		if (line[i] == c){
@@ -29,20 +32,27 @@ int countChar(std::string line, char c){
 	return count;
 }
 
-std::string indent(){
-	int openBlock = 0;
-	int closeBlock = 0;
+string indent(){
 	int tabs = 0;
-	std::string result;
-	std::string line;
-	while (getline(std::cin, line)){
+	string result;
+	string line;
+	bool noCB = false;
+	while (getline(cin, line)){
 		line = removeLeadingSpaces(line);
-		openBlock += countChar(line, '{');
-		closeBlock += countChar(line, '}');
-		tabs = (openBlock - closeBlock);
-		result += line + "\n";
+		tabs -= countChar(line, '}');
 		for (int i = 0; i < tabs; i++){
 			result += "	";
+		}
+		result += line + "\n";
+		tabs += countChar(line, '{');
+		if(noCB){
+			noCB=!noCB;
+			tabs -=1;
+		}
+		if(line.find("if")== string::npos && countChar(line,'{')==0){
+			cout << "found if" << endl;
+			tabs+=1;
+			noCB = !noCB;
 		}
 	}
 	return result;
